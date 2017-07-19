@@ -45,7 +45,7 @@ help()
     echo ""
     echo "mandatory arguments:"
     echo "-n NAME name of the experiment; mandatory"
-    echo "-g/--gtf GTF annotaion ; mandatory"
+    echo "-g/--gtf GTF annotation ; mandatory"
     echo ""
     echo "optional arguments:"
     echo "-p NPROC number of processes to do in parallel; default = $NPROC"
@@ -96,7 +96,7 @@ echo "Calling peaks..."
 macs2-stranded $KEEP_TEMP -n "${NAME}" -g "${GSIZE}" -q "${QVALUE}" "${BAMS[@]}" | sed "s/^/  /"
 peaks="${NAME}"_peaks.narrowPeak
 
-echo "Extending annotaion..."
+echo "Extending annotation..."
 fixed_gtf="${NAME}.`basename "${GTF}" .gtf`.fixed.gtf"
 gtf-extend -g "${GTF}" -p "${peaks}" -o "${fixed_gtf}" | sed "s/^/  /"
 
