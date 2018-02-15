@@ -125,10 +125,10 @@ if [ -z "${KEEP_TEMP}" ]; then
     rm "${peaks}"
 fi
 
-tags=()
-htseq_outs=()
+tags=() # variable list preparada para recibir varias entradas
+htseq_outs=() # variable list preparada para recibir varias entradas
 
-header=""
+header="" # variable vacia necesaria para dejar la primera columna del header sin valor
 
 fields="1"
 
@@ -136,18 +136,19 @@ i=0
 
 for bam in "${BAMS[@]}"
 do
-    tag=`basename "${bam}" .bam`
-    htseq_out="${htseq_dir}/${tag}.htseq.out"
-    tags+=("${tag}")
-    htseq_outs+=("${htseq_out}")
-    header="${header}\t${tag}"
-    i=$(($i+2))
-    fields="${fields},${i}"
+    tag=`basename "${bam}" .bam` # deja el nombre de la muestra sin su path y sin la extension
+    htseq_out="${htseq_dir}/${tag}.htseq.out" # archivo de counts correspondiente a "tag"
+    tags+=("${tag}")  # mandar resultado a variable list de tags
+    htseq_outs+=("${htseq_out}") # mandar resultado a variable list de counts. Asi hay dos listas coordinadas de tag-counts
+    header="${header}\t${tag}" # encabezado de la matrix final de counts. En cada ronda del loop va creciendo con un nuevo tag (y el primer valor es una tabulacion para dejar la columna de genes sin encabezado
+    i=$(($i+2)) # se utilizará para la variable fields que determina las columnas a conservar en la matrix final de counts
+    fields="${fields},${i}" # varibale de columnas a conservar. Va creciendo en cada loop, empezando por 1,2 y crece con numeros pares para evitar las columnas de genes
 done
 
 cat <(echo -e "${header}") \
-    <(paste "${htseq_outs[@]}" | cut -f "${fields}") \
+    <(paste "${htseq_outs[@]}" | cut -f "${fields}") \ # el resultado de esto se concatena con el header. De la matriz de counts, solo necesitamos las columnas alternativas que contienen los counts y evitar las columnas que contienen los nombre de genes (excepto la primera columna)
     > "${NAME}.cnt"
+# <() se utiliza para haver procesos de varios pasos y el resultado usarlo en el comando en curso
 
 if [ -z "${KEEP_TEMP}" ]; then
     for htseq_out in "${htseq_outs[@]}"
