@@ -84,7 +84,7 @@ if [ -z "$GTF" ]; then
     die "GTF is not specified (try -h for details)"
 fi
 
-BAMS=("$@")
+BAMS=("$@") # "$@" expands arguments ($1, $2, $3...) with no parameter in the command (bam files introduced as list of files separated by spaces)
 
 if [ "${#BAMS}" == 0 ]; then
     die "no bam files specified (try -h for details)"
